@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RustChain Mining Simulator</title>
+  <style>
+    :root {
+      --bg: #0a0a0f; --card: #12121a; --border: #1e1e2e;
+      --accent: #f7b731; --accent2: #6c5ce7; --green: #00d2d3;
+      --red: #ff6b6b; --text: #e0e0e0; --muted: #6c6c8a; --blue: #4dabf7;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; min-height: 100vh; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; }
+    header { text-align: center; margin-bottom: 3rem; }
+    header h1 { font-size: 2rem; color: var(--accent); letter-spacing: 2px; margin-bottom: 0.5rem; }
+    header p { color: var(--muted); font-size: 0.9rem; }
+    .tagline { color: var(--green); font-size: 0.85rem; margin-top: 0.5rem; }
+    .grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: 1.5rem; }
+    @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .card h2 { font-size: 0.85rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+    .hardware-list { display: flex; flex-direction: column; gap: 0.75rem; }
+    .hw-option { border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem 1rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 1rem; }
+    .hw-option:hover { border-color: var(--accent); }
+    .hw-option.selected { border-color: var(--accent); background: rgba(247,183,49,0.08); }
+    .hw-radio { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--muted); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .hw-option.selected .hw-radio { border-color: var(--accent); }
+    .hw-option.selected .hw-radio::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+    .hw-info { flex: 1; }
+    .hw-name { font-weight: bold; color: var(--text); font-size: 0.9rem; }
+    .hw-arch { color: var(--muted); font-size: 0.75rem; }
+    .hw-multiplier { font-size: 1.1rem; font-weight: bold; padding: 0.2rem 0.5rem; border-radius: 4px; }
+    .hw-multiplier.good { background: rgba(0,210,211,0.15); color: var(--green); }
+    .hw-multiplier.ok { background: rgba(77,171,247,0.15); color: var(--blue); }
+    .hw-multiplier.anti { background: rgba(255,107,107,0.15); color: var(--red); }
+    .phase { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0; border-bottom: 1px solid var(--border); }
+    .phase:last-child { border-bottom: none; }
+    .phase-num { width: 28px; height: 28px; border-radius: 50%; background: var(--border); color: var(--muted); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0; font-weight: bold; }
+    .phase.active .phase-num { background: var(--accent); color: #000; }
+    .phase.done .phase-num { background: var(--green); color: #000; }
+    .phase-text { flex: 1; font-size: 0.85rem; }
+    .phase-status { font-size: 0.75rem; padding: 0.15rem 0.5rem; border-radius: 3px; }
+    .phase-status.waiting { background: rgba(108,108,138,0.2); color: var(--muted); }
+    .phase-status.running { background: rgba(247,183,49,0.2); color: var(--accent); }
+    .phase-status.done { background: rgba(0,210,211,0.2); color: var(--green); }
+    .fingerprint-box { margin-top: 1.5rem; background: #0d0d14; border: 1px solid var(--border); border-radius: 6px; padding: 1rem; min-height: 80px; overflow: hidden; }
+    .fingerprint-line { font-size: 0.7rem; color: var(--green); font-family: 'Courier New', monospace; line-height: 1.6; }
+    .fingerprint-line.scanned { color: var(--accent); }
+    .fingerprint-line.vm-warning { color: var(--red); }
+    .cursor { display: inline-block; width: 8px; height: 14px; background: var(--green); animation: blink 0.8s infinite; vertical-align: middle; margin-left: 2px; }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+    .attestation-box { margin-top: 1rem; }
+    .attestation-json { background: #0d0d14; border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem; font-size: 0.68rem; color: var(--green); font-family: 'Courier New', monospace; max-height: 120px; overflow-y: auto; white-space: pre; }
+    .reward-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+    .reward-stat { background: #0d0d14; border: 1px solid var(--border); border-radius: 6px; padding: 1rem; text-align: center; }
+    .reward-stat .label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.3rem; }
+    .reward-stat .value { font-size: 1.5rem; font-weight: bold; color: var(--accent); }
+    .reward-stat .unit { font-size: 0.75rem; color: var(--muted); }
+    .reward-stat.full { grid-column: 1 / -1; }
+    .reward-stat .sub { font-size: 0.8rem; color: var(--text); margin-top: 0.3rem; }
+    .comparison-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 0.5rem; }
+    .comparison-table th { color: var(--muted); text-align: left; padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.7rem; text-transform: uppercase; }
+    .comparison-table td { padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--border); }
+    .comparison-table tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+    .comparison-table .my-row { color: var(--accent); font-weight: bold; }
+    .controls { display: flex; gap: 0.75rem; margin-top: 1rem; flex-wrap: wrap; }
+    button { background: var(--accent); color: #000; border: none; padding: 0.6rem 1.5rem; border-radius: 6px; cursor: pointer; font-family: 'Courier New', monospace; font-weight: bold; font-size: 0.85rem; transition: opacity 0.2s; }
+    button:hover { opacity: 0.85; }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
+    button.secondary { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+    .calc-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
+    .calc-row label { font-size: 0.8rem; color: var(--muted); min-width: 130px; }
+    .calc-row input { background: #0d0d14; border: 1px solid var(--border); color: var(--text); padding: 0.4rem 0.75rem; border-radius: 4px; width: 110px; font-family: 'Courier New', monospace; }
+    .calc-result { background: #0d0d14; border: 1px solid var(--accent); border-radius: 6px; padding: 1rem; margin-top: 1rem; text-align: center; }
+    .calc-result .big { font-size: 1.8rem; color: var(--accent); font-weight: bold; }
+    .calc-result .sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.3rem; }
+    .log-box { background: #0d0d14; border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem; font-size: 0.68rem; color: var(--green); font-family: 'Courier New', monospace; max-height: 150px; overflow-y: auto; min-height: 60px; }
+    .log-entry { padding: 0.1rem 0; }
+    .log-entry.info { color: var(--muted); }
+    .log-entry.ok { color: var(--green); }
+    .log-entry.warn { color: var(--accent); }
+    .log-entry.error { color: var(--red); }
+    .log-entry .ts { color: var(--muted); margin-right: 0.5rem; }
+    .download-section { text-align: center; padding: 1.5rem; }
+    .download-section a { display: inline-block; background: var(--accent); color: #000; padding: 0.75rem 2rem; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 0.9rem; margin-top: 0.5rem; }
+    .download-section p { font-size: 0.8rem; color: var(--muted); margin-top: 0.5rem; }
+    .wallet-note { font-size: 0.75rem; color: var(--muted); margin-top: 1rem; text-align: center; }
+    .wallet-note code { background: #0d0d14; padding: 0.1rem 0.4rem; border-radius: 3px; color: var(--green); }
+    .why-box { background: rgba(247,183,49,0.06); border: 1px solid rgba(247,183,49,0.2); border-radius: 6px; padding: 0.75rem; margin-top: 0.75rem; font-size: 0.78rem; color: var(--text); line-height: 1.5; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>&#9940; RUSTCHAIN MINING SIMULATOR</h1>
+    <p>See how Proof-of-Antiquity mining works &mdash; no hardware required</p>
+    <p class="tagline">The older your hardware, the harder it works.&trade;</p>
+  </header>
+
+  <div class="grid">
+    <!-- LEFT -->
+    <div>
+      <div class="card">
+        <h2>&#128187; Pick Your Hardware</h2>
+        <div class="hardware-list">
+          <div class="hw-option" data-hw="pbg4" onclick="selectHardware('pbg4')">
+            <div class="hw-radio"></div>
+            <div class="hw-info">
+              <div class="hw-name">PowerBook G4 15&quot;</div>
+              <div class="hw-arch">PowerPC G4 1.67GHz &middot; 512MB RAM &middot; 2005</div>
+            </div>
+            <div class="hw-multiplier good">2.5&times;</div>
+          </div>
+          <div class="hw-option selected" data-hw="pmg5" onclick="selectHardware('pmg5')">
+            <div class="hw-radio"></div>
+            <div class="hw-info">
+              <div class="hw-name">Power Mac G5</div>
+              <div class="hw-arch">Dual PowerPC G5 2.0GHz &middot; 4GB RAM &middot; 2003</div>
+            </div>
+            <div class="hw-multiplier good">2.0&times;</div>
+          </div>
+          <div class="hw-option" data-hw="x86" onclick="selectHardware('x86')">
+            <div class="hw-radio"></div>
+            <div class="hw-info">
+              <div class="hw-name">Modern x86</div>
+              <div class="hw-arch">AMD Ryzen 9 7950X &middot; 64GB RAM &middot; 2023</div>
+            </div>
+            <div class="hw-multiplier ok">1.0&times;</div>
+          </div>
+          <div class="hw-option" data-hw="vm" onclick="selectHardware('vm')">
+            <div class="hw-radio"></div>
+            <div class="hw-info">
+              <div class="hw-name">Virtual Machine</div>
+              <div class="hw-arch">VMware &middot; 4 vCPU &middot; 8GB RAM &middot; 2024</div>
+            </div>
+            <div class="hw-multiplier anti">~0&times;</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>&#129333; Reward Calculator</h2>
+        <div class="calc-row">
+          <label>Daily uptime (hours):</label>
+          <input type="number" id="calcHours" value="24" min="1" max="24" oninput="updateCalc()">
+        </div>
+        <div class="calc-row">
+          <label>RTC price (USD):</label>
+          <input type="number" id="calcPrice" value="0.10" step="0.01" min="0.001" oninput="updateCalc()">
+        </div>
+        <div class="calc-result">
+          <div class="big" id="calcEarnings">0.0000 RTC</div>
+          <div class="sub">&#8776; $<span id="calcUsd">0.00</span> / day</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>&#127941; Architecture Comparison</h2>
+        <table class="comparison-table">
+          <thead>
+            <tr><th>Hardware</th><th>Multiplier</th><th>RTC/day</th><th>Relative</th></tr>
+          </thead>
+          <tbody id="compTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div>
+      <div class="card">
+        <h2>&#9881; Mining Loop Simulation</h2>
+        <div>
+          <div class="phase" id="phase1">
+            <div class="phase-num">1</div>
+            <div class="phase-text">Hardware Fingerprint Detection</div>
+            <div class="phase-status waiting" id="p1status">waiting</div>
+          </div>
+          <div class="phase" id="phase2">
+            <div class="phase-num">2</div>
+            <div class="phase-text">Attestation Payload Submission</div>
+            <div class="phase-status waiting" id="p2status">waiting</div>
+          </div>
+          <div class="phase" id="phase3">
+            <div class="phase-num">3</div>
+            <div class="phase-text">Epoch Participation (Round-Robin)</div>
+            <div class="phase-status waiting" id="p3status">waiting</div>
+          </div>
+          <div class="phase" id="phase4">
+            <div class="phase-num">4</div>
+            <div class="phase-text">Reward Calculation &amp; Payout</div>
+            <div class="phase-status waiting" id="p4status">waiting</div>
+          </div>
+        </div>
+
+        <div class="fingerprint-box" id="fpBox"><div class="cursor"></div></div>
+
+        <div class="attestation-box" id="attBox" style="display:none">
+          <div style="font-size:0.7rem;color:var(--muted);margin-bottom:0.4rem;">ATTESTATION PAYLOAD</div>
+          <div class="attestation-json" id="attJson"></div>
+        </div>
+
+        <div class="controls">
+          <button id="btnRun" onclick="runSimulation()">&#9654; Run Simulation</button>
+          <button class="secondary" onclick="resetSimulation()">&#8634; Reset</button>
+        </div>
+      </div>
+
+      <div class="card" id="rewardCard" style="display:none">
+        <h2>&#128200; Simulation Results</h2>
+        <div class="reward-panel">
+          <div class="reward-stat">
+            <div class="label">Antiquity Multiplier</div>
+            <div class="value" id="resMult">&#8212;</div>
+          </div>
+          <div class="reward-stat">
+            <div class="label">Reward / Epoch</div>
+            <div class="value" id="resEpoch">&#8212;</div>
+            <div class="unit">RTC</div>
+          </div>
+          <div class="reward-stat">
+            <div class="label">Daily Earnings</div>
+            <div class="value" id="resDaily">&#8212;</div>
+            <div class="unit">RTC (288 epochs)</div>
+          </div>
+          <div class="reward-stat">
+            <div class="label">Est. USD / Day</div>
+            <div class="value" id="resUsd">&#8212;</div>
+            <div class="unit">@ $0.10/RTC</div>
+          </div>
+          <div class="reward-stat full">
+            <div class="label">Why This Works</div>
+            <div class="sub" id="resWhy" style="color:var(--text);font-size:0.8rem;margin-top:0.3rem;">&#8212;</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="logCard" style="display:none">
+        <h2>&#128220; Activity Log</h2>
+        <div class="log-box" id="logBox"></div>
+      </div>
+
+      <div class="card download-section">
+        <h2 style="border:none;text-align:center;">&#128640; Ready to Mine for Real?</h2>
+        <p style="margin-top:0.75rem;">Download the real RustChain miner and start earning RTC today.</p>
+        <a href="https://github.com/Scottcjn/Rustchain/releases" target="_blank">Download RustChain Miner &#8594;</a>
+        <p style="margin-top:0.5rem;font-size:0.75rem;">Supports: macOS (Intel/PowerPC) &middot; Linux (x86/ARM/PPC) &middot; Windows</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="wallet-note">
+    Bounty #2301 &middot; RTC Wallet: <code>RTC2fe3c33c77666ff76a1cd0999fd4466ee81250ff</code>
+  </div>
+</div>
+
+<script>
+(function() {
+  var HARDWARE = {
+    pbg4: { name:'PowerBook G4 15"', year:2005, multiplier:2.5, cpu:'PowerPC G4 7455 @ 1.67GHz', cores:1, memory:'512MB', fp:'PBG4-1.67-PPC-512-E88A3F2D', score:98, dailyBase:2.88,
+      desc:'Genuine Apple vintage hardware. High antiquity score means this machine has proven its age and reliability over nearly two decades.' },
+    pmg5: { name:'Power Mac G5', year:2003, multiplier:2.0, cpu:'Dual PowerPC G5 970 @ 2.0GHz', cores:2, memory:'4GB', fp:'PMG5-Dual2.0-ECC-4G-A77B1C44', score:99, dailyBase:2.88,
+      desc:'Server-grade dual-processor workstation. Exceptional physical age and dual-core parallelism make this a top-tier mining rig.' },
+    x86:  { name:'Modern x86', year:2023, multiplier:1.0, cpu:'AMD Ryzen 9 7950X 16C/32T', cores:16, memory:'64GB', fp:'X86-AMD-7950X-64G-SHA256-A1B2C3D4', score:15, dailyBase:2.88,
+      desc:'Modern silicon. Fast, powerful — but for RustChain Proof-of-Antiquity, raw compute matters less than hardware age. Still participates fully.' },
+    vm:   { name:'Virtual Machine', year:2024, multiplier:0.000000001, cpu:'VMware Virtual Platform  4 vCPU', cores:4, memory:'8GB', fp:'VM-VMWARE-EMULATED-ZERO-VULN-HACK', score:0, dailyBase:2.88,
+      desc:'VMs cannot cheat the system. No physical hardware, no antiquity score. RustChain uses hardware fingerprinting — not just hash power.' }
+  };
+
+  var EPOCH_REWARD = 0.01;
+  var EPOCHS_PER_DAY = 288;
+  var NODE = 'https://50.28.86.131';
+  var selectedHw = 'pmg5';
+  var simRunning = false;
+
+  function selectHardware(hw) {
+    selectedHw = hw;
+    document.querySelectorAll('.hw-option').forEach(function(el){ el.classList.remove('selected'); });
+    document.querySelector('[data-hw="'+hw+'"]').classList.add('selected');
+    updateCalc();
+    updateComparison();
+    log('Hardware selected: ' + HARDWARE[hw].name + ' (' + HARDWARE[hw].multiplier + 'x antiquity)', 'info');
+  }
+
+  function log(msg, type) {
+    type = type || 'ok';
+    var now = new Date();
+    var ts = String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0');
+    var box = document.getElementById('logBox');
+    if (box) {
+      var d = document.createElement('div');
+      d.className = 'log-entry ' + type;
+      d.innerHTML = '<span class="ts">['+ts+']</span> '+msg;
+      box.appendChild(d);
+      box.scrollTop = box.scrollHeight;
+    }
+  }
+
+  function sleep(ms) { return new Promise(function(r){ setTimeout(r, ms); }); }
+
+  function setPhase(n, state, text) {
+    var el = document.getElementById('phase'+n);
+    var st = document.getElementById('p'+n+'status');
+    el.className = 'phase' + (state === 'active' ? ' active' : state === 'done' ? ' done' : '');
+    if (st && text) { st.className = 'phase-status ' + state; st.textContent = text; }
+  }
+
+  function rnd(min, max) { return Math.floor(Math.random()*(max-min+1))+min; }
+
+  async function runSimulation() {
+    if (simRunning) return;
+    simRunning = true;
+    document.getElementById('btnRun').disabled = true;
+
+    // Reset phases
+    [1,2,3,4].forEach(function(n) {
+      setPhase(n, 'waiting', 'waiting');
+    });
+    document.getElementById('fpBox').innerHTML = '<div class="cursor"></div>';
+    document.getElementById('attBox').style.display = 'none';
+    document.getElementById('rewardCard').style.display = 'none';
+    document.getElementById('logCard').style.display = 'none';
+    document.getElementById('logBox').innerHTML = '';
+    document.getElementById('logCard').style.display = 'block';
+
+    var hw = HARDWARE[selectedHw];
+    log('=== RustChain Mining Simulation Started ===', 'info');
+    log('Selected: ' + hw.name + ' (' + hw.year + ')', 'info');
+    log('Target node: ' + NODE, 'info');
+
+    // Phase 1: Hardware Fingerprint
+    setPhase(1, 'active', 'running');
+    log('Phase 1: Detecting hardware fingerprint...', 'info');
+    await sleep(400);
+
+    var fpLines = [
+      '[CPU]   ' + hw.cpu,
+      '[CORES] ' + hw.cores,
+      '[MEM]   ' + hw.memory,
+      '[YEAR]  ' + hw.year,
+      '[FING]  ' + hw.fp,
+      '',
+      'Running antiquity verification...'
+    ];
+
+    var fpBox = document.getElementById('fpBox');
+    fpBox.innerHTML = '';
+
+    for (var i = 0; i < fpLines.length; i++) {
+      await sleep(280 + rnd(0,200));
+      var div = document.createElement('div');
+      div.className = 'fingerprint-line';
+      div.textContent = fpLines[i];
+      fpBox.appendChild(div);
+      fpBox.scrollTop = fpBox.scrollHeight;
+    }
+
+    await sleep(500);
+
+    if (selectedHw === 'vm') {
+      await sleep(400);
+      var warn = document.createElement('div');
+      warn.className = 'fingerprint-line vm-warning';
+      warn.textContent = 'WARNING: Virtual machine detected. Antiquity score: 0. VM attestation REJECTED.';
+      fpBox.appendChild(warn);
+      fpBox.scrollTop = fpBox.scrollHeight;
+      log('WARNING: VM detected — antiquity score 0 — attestation REJECTED', 'error');
+      log('VMs cannot participate. Proof-of-Antiquity requires physical hardware.', 'error');
+      setPhase(1, 'done', 'REJECTED');
+      await sleep(800);
+      simRunning = false;
+      document.getElementById('btnRun').disabled = false;
+      return;
+    }
+
+    await sleep(400);
+    var ok = document.createElement('div');
+    ok.className = 'fingerprint-line scanned';
+    ok.textContent = 'Antiquity Score: ' + hw.score + '/100 — Fingerprint VERIFIED';
+    fpBox.appendChild(ok);
+    fpBox.scrollTop = fpBox.scrollHeight;
+    log('Hardware verified. Antiquity score: ' + hw.score + '/100', 'ok');
+    log('Multiplier: ' + hw.multiplier + 'x (' + hw.year + ' hardware)', 'ok');
+    setPhase(1, 'done', 'verified');
+    await sleep(600);
+
+    // Phase 2: Attestation Payload
+    setPhase(2, 'active', 'running');
+    log('Phase 2: Building attestation payload...', 'info');
+    await sleep(500);
+
+    var minerId = 'miner-' + hw.fp.slice(-8).toLowerCase();
+    var epochId = rnd(50000, 60000);
+    var slotInEpoch = rnd(0, 287);
+    var ts = Date.now();
+    var sig = Array(64).fill(0).map(function(){ return Math.floor(Math.random()*256); });
+    sig = btoa(String.fromCharCode.apply(null, sig)).slice(0, 64);
+
+    var payload = {
+      version: '2.2.1-rip200',
+      miner_id: minerId,
+      wallet: 'RTC2fe3c33c77666ff76a1cd0999fd4466ee81250ff',
+      epoch: epochId,
+      slot: slotInEpoch,
+      hardware: {
+        cpu: hw.cpu,
+        cores: hw.cores,
+        memory_gb: parseInt(hw.memory) || 0,
+        antiquity_year: hw.year,
+        fingerprint: hw.fp
+      },
+      antiquity_score: hw.score,
+      antiquity_multiplier: hw.multiplier,
+      base_reward: '0.01',
+      adjusted_reward: (EPOCH_REWARD * hw.multiplier).toFixed(6),
+      submitted_at: new Date(ts).toISOString(),
+      node: NODE,
+      signature: sig + '...'
+    };
+
+    document.getElementById('attBox').style.display = 'block';
+    document.getElementById('attJson').textContent = JSON.stringify(payload, null, 2);
+    log('Attestation payload built (' + JSON.stringify(payload).length + ' bytes)', 'ok');
+    log('Submitting to ' + NODE + '/attest/submit...', 'info');
+    await sleep(1000);
+
+    var attestLines = [
+      'POST ' + NODE + '/attest/submit  [200 OK, ' + rnd(120,200) + 'ms]',
+      'Attestation accepted: #' + Math.random().toString(36).slice(2,10).toUpperCase()
+    ];
+    for (var j = 0; j < attestLines.length; j++) {
+      await sleep(250);
+      log(attestLines[j], 'ok');
+    }
+
+    setPhase(2, 'done', 'submitted');
+    await sleep(600);
+
+    // Phase 3: Epoch Participation
+    setPhase(3, 'active', 'running');
+    log('Phase 3: Round-robin epoch participation...', 'info');
+    await sleep(600);
+
+    var totalMiners = rnd(11,15);
+    var mySlot = rnd(1, totalMiners);
+    var histEpochs = rnd(50,150);
+    var attThisEpoch = Math.min(rnd(8,12), totalMiners);
+
+    log(totalMiners + ' active miners in current epoch', 'info');
+    log('My assigned slot: ' + mySlot + '/' + totalMiners, 'info');
+    log('Historical attestations: ' + histEpochs + ' epochs', 'ok');
+    log('Attestations this epoch: ' + attThisEpoch + '/' + totalMiners + ' miners', 'ok');
+    log('Slot selection: My hardware qualifies for epoch ' + epochId, 'ok');
+    setPhase(3, 'done', 'active');
+    await sleep(600);
+
+    // Phase 4: Reward
+    setPhase(4, 'active', 'running');
+    log('Phase 4: Calculating reward...', 'info');
+    await sleep(800);
+
+    var dailyReward = hw.dailyBase * hw.multiplier;
+    var dailyUsd = dailyReward * 0.10;
+
+    log('Base reward per epoch: ' + EPOCH_REWARD + ' RTC', 'info');
+    log('Antiquity multiplier: ' + hw.multiplier + 'x', 'ok');
+    log('Effective reward/epoch: ' + (EPOCH_REWARD * hw.multiplier).toFixed(6) + ' RTC', 'ok');
+    log('Epochs per day: ' + EPOCHS_PER_DAY, 'info');
+    log('Daily reward: ' + dailyReward.toFixed(4) + ' RTC', 'ok');
+    log('~$' + dailyUsd.toFixed(4) + '/day @ $0.10/RTC', 'ok');
+
+    setPhase(4, 'done', 'calculated');
+    await sleep(400);
+
+    // Show results
+    document.getElementById('rewardCard').style.display = 'block';
+    document.getElementById('resMult').textContent = hw.multiplier + 'x';
+    document.getElementById('resEpoch').textContent = (EPOCH_REWARD * hw.multiplier).toFixed(4);
+    document.getElementById('resDaily').textContent = dailyReward.toFixed(4);
+    document.getElementById('resUsd').textContent = dailyUsd.toFixed(4);
+    document.getElementById('resWhy').textContent = hw.desc;
+
+    log('', 'info');
+    log('=== Simulation Complete ===', 'info');
+    log('Estimated daily: ' + dailyReward.toFixed(4) + ' RTC ($' + dailyUsd.toFixed(4) + ')', 'ok');
+    log('Wallet: RTC2fe3c33c77666ff76a1cd0999fd4466ee81250ff', 'info');
+
+    simRunning = false;
+    document.getElementById('btnRun').disabled = false;
+  }
+
+  function resetSimulation() {
+    if (simRunning) return;
+    document.getElementById('rewardCard').style.display = 'none';
+    document.getElementById('logCard').style.display = 'none';
+    document.getElementById('attBox').style.display = 'none';
+    document.getElementById('fpBox').innerHTML = '<div class="cursor"></div>';
+    [1,2,3,4].forEach(function(n){ setPhase(n, 'waiting', 'waiting'); });
+  }
+
+  function updateCalc() {
+    var hours = parseFloat(document.getElementById('calcHours').value) || 24;
+    var price = parseFloat(document.getElementById('calcPrice').value) || 0.10;
+    var mult = HARDWARE[selectedHw].multiplier;
+    var daily = HARDWARE[selectedHw].dailyBase * mult;
+    var earned = daily * (hours / 24);
+    var usd = earned * price;
+    document.getElementById('calcEarnings').textContent = earned.toFixed(4) + ' RTC';
+    document.getElementById('calcUsd').textContent = usd.toFixed(4);
+  }
+
+  function updateComparison() {
+    var mult = HARDWARE[selectedHw].multiplier;
+    var table = document.getElementById('compTable');
+    table.innerHTML = '';
+    var keys = ['pbg4','pmg5','x86','vm'];
+    var names = {pbg4:'PowerBook G4', pmg5:'Power Mac G5', x86:'Modern x86', vm:'Virtual Machine'};
+    var maxDaily = HARDWARE['pbg4'].dailyBase * HARDWARE['pbg4'].multiplier;
+    keys.forEach(function(k) {
+      var h = HARDWARE[k];
+      var daily = h.dailyBase * h.multiplier;
+      var pct = Math.min(100, (daily / maxDaily) * 100);
+      var tr = document.createElement('tr');
+      var isMe = k === selectedHw;
+      if (isMe) tr.className = 'my-row';
+      tr.innerHTML = '<td>' + names[k] + '</td>' +
+        '<td>' + h.multiplier + 'x</td>' +
+        '<td>' + daily.toFixed(4) + '</td>' +
+        '<td><div style="background:var(--accent);height:6px;border-radius:3px;width:'+pct+'px;max-width:80px;opacity:0.7;"></div></td>';
+      table.appendChild(tr);
+    });
+  }
+
+  updateCalc();
+  updateComparison();
+})();
+</script>
+</body>
+</html>
