@@ -1,0 +1,38 @@
+name: 'RTC Reward Action'
+description: 'Automatically award RTC tokens when a PR is merged'
+author: 'jujujuda'
+branding:
+  icon: 'award'
+  color: 'purple'
+inputs:
+  node-url:
+    description: 'RustChain node URL'
+    required: true
+    default: 'https://50.28.86.131'
+  amount:
+    description: 'RTC amount to award per merge'
+    required: true
+    default: '5'
+  wallet-from:
+    description: 'Sender wallet name (miner_id)'
+    required: true
+  admin-key:
+    description: 'Admin key for transfers (use secrets)'
+    required: true
+  recipient:
+    description: 'Recipient wallet name (defaults to PR author)'
+    required: false
+  memo:
+    description: 'Transfer memo'
+    required: false
+    default: 'PR merged — RTC reward'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.node-url }}
+    - ${{ inputs.amount }}
+    - ${{ inputs.wallet-from }}
+    - ${{ inputs.admin-key }}
+    - ${{ inputs.recipient }}
+    - ${{ inputs.memo }}
