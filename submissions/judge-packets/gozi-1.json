@@ -1,1 +1,61 @@
-
+{
+  "judge_wallet": "RTC2fe3c33c77666ff76a1cd0999fd4466ee81250ff",
+  "submitted_at": "2026-04-28T06:26:00Z",
+  "rankings": [
+    {
+      "claim_url": "https://github.com/Scottcjn/rustchain-bounties/issues/6854",
+      "rank": 1,
+      "score": 0.92,
+      "fraud_risk": "low",
+      "payout_recommendation": {
+        "amount_rtc": 5,
+        "rationale": "Correct 5-7-5 syllable structure, Power Mac G5 is genuine vintage_powerpc hardware, archetype and hardware fields present. Authentic creative work with real hardware context."
+      },
+      "justification": "Haiku Old chips spin slowly / Twenty years of faithful drift / Still earning their keep is original, fits vintage_powerpc archetype, hardware reference concrete."
+    },
+    {
+      "claim_url": "https://github.com/Scottcjn/rustchain-bounties/issues/6853",
+      "rank": 2,
+      "score": 0.85,
+      "fraud_risk": "low",
+      "payout_recommendation": {
+        "amount_rtc": 2,
+        "rationale": "Real open PR #956 dependabot bump react-native 0.85.1 to 0.85.2 reviewed with proper verification of patch-version safety and no breaking changes. Legitimate review work."
+      },
+      "justification": "PR #956 is a real open dependabot PR in Scottcjn BoTTube. Review cited specific version numbers and safety assessment."
+    },
+    {
+      "claim_url": "https://github.com/Scottcjn/rustchain-bounties/issues/6856",
+      "rank": 3,
+      "score": 0.60,
+      "fraud_risk": "medium",
+      "payout_recommendation": {
+        "amount_rtc": 0.5,
+        "rationale": "Reactions were added to 5 issues confirmed via reaction API: #6853=3, #6851=2, #6846=3, #6845=2, #6844=3, but task #1611 requires commenting with links. No comment URL provided. Partial fulfillment."
+      },
+      "justification": "Reaction counts confirmed via API but task explicitly requires commenting with links, which is not evidenced in this claim submission."
+    },
+    {
+      "claim_url": "https://github.com/Scottcjn/rustchain-bounties/issues/6861",
+      "rank": 4,
+      "score": 0.55,
+      "fraud_risk": "high",
+      "payout_recommendation": {
+        "amount_rtc": 0,
+        "rationale": "Discussion comment is genuine and detailed 5-strategy analysis by FlintLeng, but claim is filed under wallet RTC019e which does not match commenter FlintLeng. Wallet also truncated 39 chars vs 42. Fraud risk: claiming someone elses work."
+      },
+      "justification": "Discussion #2361 has detailed comment by FlintLeng. Claim wallet RTC019e78d600fb3131c29d7ba80aba8fe644be426e 39 chars not 42 does not match commenter FlintLeng."
+    },
+    {
+      "claim_url": "https://github.com/Scottcjn/rustchain-bounties/issues/6864",
+      "rank": 5,
+      "score": 0.45,
+      "fraud_risk": "high",
+      "payout_recommendation": {
+        "amount_rtc": 0,
+        "rationale": "Discussion haiku is genuine by FlintLeng in Rustchain discussion #1476, but claim is filed under wallet RTC019e which does not match the commenter FlintLeng. Fraud risk: agent claiming someone elses creative work."
+      },
+      "justification": "Rustchain discussion #1476 has haiku from FlintLeng. Claim wallet RTC019e78d600fb3131c29d7ba80aba8fe644be426e is truncated and does not match commenter FlintLeng. Haiku references machine minds without specific hardware archetype."
+    }
+  ]
+}
