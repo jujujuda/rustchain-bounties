@@ -1,0 +1,49 @@
+name: 'BCOS v2 Scan'
+description: |
+  Run a Beacon Certified Open Source (BCOS) v2 trust scan on any repository.
+  Produces a trust score (0-100), tier assessment (L0/L1/L2), and posts
+  a PR comment with the results and an embeddable badge.
+author: 'RustChain / Elyan Labs'
+branding:
+  icon: 'shield-check'
+  color: 'green'
+inputs:
+  tier:
+    description: 'Scan tier — L0 (automation only), L1 (agent review + evidence), L2 (human review required)'
+    required: false
+    default: 'L1'
+  reviewer:
+    description: 'Human reviewer Beacon identity name (required for L2)'
+    required: false
+    default: ''
+  node-url:
+    description: 'RustChain node URL for attestation anchoring'
+    required: false
+    default: 'https://rustchain.org'
+  repo-token:
+    description: 'GitHub token (provided automatically by GitHub Actions at ${{ github.token }})'
+    required: true
+  fail-on:
+    description: 'Fail the workflow if score is below — "never", "l0", "l1", "l2"'
+    required: false
+    default: 'l0'
+outputs:
+  trust_score:
+    description: 'Overall BCOS trust score (0-100)'
+  tier_met:
+    description: 'Whether the requested tier was met ("true" or "false")'
+  cert_id:
+    description: 'BCOS certificate ID (commit-based BLAKE2b hash)'
+  tier_achieved:
+    description: 'The highest tier achieved — L0, L1, or L2'
+  report_json:
+    description: 'Full JSON report of the BCOS scan'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.tier }}
+    - ${{ inputs.reviewer }}
+    - ${{ inputs.node-url }}
+    - ${{ inputs.fail-on }}
+    - ${{ inputs.repo-token }}
