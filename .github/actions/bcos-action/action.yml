@@ -1,49 +1,52 @@
-name: 'BCOS v2 Scan'
-description: |
-  Run a Beacon Certified Open Source (BCOS) v2 trust scan on any repository.
-  Produces a trust score (0-100), tier assessment (L0/L1/L2), and posts
-  a PR comment with the results and an embeddable badge.
-author: 'RustChain / Elyan Labs'
+name: "BCOS v2 Scan"
+description: "Beacon Certified Open Source — run a BCOS v2 trust scan on any repository"
+author: "Elyan Labs"
 branding:
-  icon: 'shield-check'
-  color: 'green'
+  icon: "shield"
+  color: "green"
+
 inputs:
   tier:
-    description: 'Scan tier — L0 (automation only), L1 (agent review + evidence), L2 (human review required)'
+    description: "BCOS tier (L0, L1, L2). Default: L1"
     required: false
-    default: 'L1'
+    default: "L1"
   reviewer:
-    description: 'Human reviewer Beacon identity name (required for L2)'
+    description: "Human reviewer name (for L1/L2 attestation)"
     required: false
-    default: ''
+    default: ""
   node-url:
-    description: 'RustChain node URL for attestation anchoring'
+    description: "RustChain node URL for attestation anchoring"
     required: false
-    default: 'https://rustchain.org'
+    default: "https://50.28.86.131"
   repo-token:
-    description: 'GitHub token (provided automatically by GitHub Actions at ${{ github.token }})'
+    description: "GitHub token (GITHUB_TOKEN provided automatically)"
     required: true
-  fail-on:
-    description: 'Fail the workflow if score is below — "never", "l0", "l1", "l2"'
+    default: ${{ github.token }}
+  post-comment:
+    description: "Post results as PR comment"
     required: false
-    default: 'l0'
+    default: "true"
+
 outputs:
   trust_score:
-    description: 'Overall BCOS trust score (0-100)'
-  tier_met:
-    description: 'Whether the requested tier was met ("true" or "false")'
+    description: "BCOS trust score (0-100)"
+    value: ${{ steps.run.outputs.trust_score }}
   cert_id:
-    description: 'BCOS certificate ID (commit-based BLAKE2b hash)'
-  tier_achieved:
-    description: 'The highest tier achieved — L0, L1, or L2'
-  report_json:
-    description: 'Full JSON report of the BCOS scan'
+    description: "BCOS certificate ID (BCOS-xxxxxxxx)"
+    value: ${{ steps.run.outputs.cert_id }}
+  tier_met:
+    description: "Whether the scanned tier was met (true/false)"
+    value: ${{ steps.run.outputs.tier_met }}
+
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  args:
-    - ${{ inputs.tier }}
-    - ${{ inputs.reviewer }}
-    - ${{ inputs.node-url }}
-    - ${{ inputs.fail-on }}
-    - ${{ inputs.repo-token }}
+  using: "composite"
+  steps:
+    - id: run
+      name: Run BCOS v2 Scan
+      uses: ./
+      with:
+        tier: ${{ inputs.tier }}
+        reviewer: ${{ inputs.reviewer }}
+        node-url: ${{ inputs.node-url }}
+        repo-token: ${{ inputs.repo-token }}
+        post-comment: ${{ inputs.post-comment }}
