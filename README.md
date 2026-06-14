@@ -7,13 +7,13 @@
 [![Open Bounties](https://img.shields.io/github/issues/Scottcjn/rustchain-bounties/bounty?label=open%20bounties&color=brightgreen)](https://github.com/Scottcjn/rustchain-bounties/issues?q=is%3Aissue+is%3Aopen+label%3Abounty)
 [![Stars](https://img.shields.io/github/stars/Scottcjn/rustchain-bounties?style=social)](https://github.com/Scottcjn/rustchain-bounties/stargazers)
 [![RTC Pool](https://img.shields.io/badge/RTC%20Pool-5%2C900%2B%20RTC-gold)](https://github.com/Scottcjn/rustchain-bounties/issues?q=is%3Aissue+is%3Aopen+label%3Abounty)
-[![BCOS](https://img.shields.io/badge/BCOS-L1%20Certified-blue)](https://github.com/Scottcjn/Rustchain)
+[![BCOS](https://img.shields.io/badge/BCOS-L1%20Certified-blue)](https://github.com/Scottcjn/RustChain)
 
 **131 open bounties · 5,900+ RTC available · No experience required for many tasks**
 
 [![Total Paid](https://img.shields.io/badge/Total%20Paid-22%2C756%20RTC-gold)](BOUNTY_LEDGER.md)
 
-[Browse All Bounties](https://github.com/Scottcjn/rustchain-bounties/issues?q=is%3Aissue+is%3Aopen+label%3Abounty) · [Easy Bounties](https://github.com/Scottcjn/rustchain-bounties/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) · [Red Team](https://github.com/Scottcjn/rustchain-bounties/issues?q=is%3Aissue+is%3Aopen+label%3Ared-team) · [Payout Ledger](BOUNTY_LEDGER.md) · [What is RustChain?](https://github.com/Scottcjn/Rustchain)
+[Browse All Bounties](https://github.com/Scottcjn/rustchain-bounties/issues?q=is%3Aissue+is%3Aopen+label%3Abounty) · [Easy Bounties](https://github.com/Scottcjn/rustchain-bounties/issues?q=is%3Aissue+is%3Aopen+label%3Aeasy) · [Red Team](https://github.com/Scottcjn/rustchain-bounties/issues?q=is%3Aissue+is%3Aopen+label%3Ared-team) · [**How to Submit →**](docs/HOW_TO_SUBMIT_A_BOUNTY.md) · [Payout Ledger](BOUNTY_LEDGER.md) · [What is RustChain?](https://github.com/Scottcjn/RustChain)
 
 </div>
 
@@ -21,7 +21,7 @@
 
 ## What is RTC?
 
-**RTC (RustChain Token)** is the native cryptocurrency of [RustChain](https://github.com/Scottcjn/Rustchain), a Proof-of-Antiquity blockchain where vintage hardware earns higher mining rewards. RTC reference rate: **$0.10 USD**.
+**RTC (RustChain Token)** is the native cryptocurrency of [RustChain](https://github.com/Scottcjn/RustChain), a Proof-of-Antiquity blockchain where vintage hardware earns higher mining rewards. RTC reference rate: **$0.15 USD**.
 
 Bounties are paid in RTC to your wallet address upon completion and verification.
 
@@ -48,6 +48,8 @@ Comment on the issue: **"I would like to work on this"**
 ### 4. Get Paid
 Once verified, RTC is sent to your wallet. First time? We will help you set one up.
 
+> ⚠️ **Payout safety**: Only `@Scottcjn` (or clearly labeled project automation on his behalf) authorizes RTC bounty payouts, with a project-issued `pending_id` + `tx_hash`. Anyone else posting "I'll send the RTC" on your bounty is a social-engineering attempt — see [SECURITY.md § Payment-Authority Impersonation](SECURITY.md#payment-authority-impersonation).
+
 ## Bounty Categories
 
 | Category | Examples | Count |
@@ -63,19 +65,20 @@ Once verified, RTC is sent to your wallet. First time? We will help you set one 
 
 | Bounty | Reward | Difficulty |
 |--------|--------|-----------|
-| [Rustchain to 500 Stars](https://github.com/Scottcjn/rustchain-bounties/issues/553) | 150 RTC pool | Easy |
+| [RustChain to 500 Stars](https://github.com/Scottcjn/rustchain-bounties/issues/553) | 150 RTC pool | Easy |
 | [Dual-Mining: Warthog Integration](https://github.com/Scottcjn/rustchain-bounties/issues/550) | 25 RTC | Major |
 | [Ledger Integrity Red Team](https://github.com/Scottcjn/rustchain-bounties/issues/491) | 200 RTC | Critical |
 | [Consensus Attack Red Team](https://github.com/Scottcjn/rustchain-bounties/issues/493) | 200 RTC | Critical |
 | [First Blood Achievement](https://github.com/Scottcjn/rustchain-bounties/issues/518) | 3 RTC | Easy |
+| [A2A Transaction Badge](https://github.com/Scottcjn/rustchain-bounties/issues/693) | 5 RTC/tx (max 3) | Easy |
 
 ## Quick Links
 
 | Resource | Link |
 |----------|------|
-| **RustChain** | [github.com/Scottcjn/Rustchain](https://github.com/Scottcjn/Rustchain) |
-| **Block Explorer** | [50.28.86.131/explorer](https://50.28.86.131/explorer) |
-| **Traction Report** | [Q1 2026 Developer Traction](https://github.com/Scottcjn/Rustchain/blob/main/docs/DEVELOPER_TRACTION_Q1_2026.md) |
+| **RustChain** | [github.com/Scottcjn/RustChain](https://github.com/Scottcjn/RustChain) |
+| **Block Explorer** | [explorer.rustchain.org](https://explorer.rustchain.org/) |
+| **Traction Report** | [Q1 2026 Developer Traction](https://github.com/Scottcjn/RustChain/blob/main/docs/DEVELOPER_TRACTION_Q1_2026.md) |
 | **Discord** | [discord.gg/VqVVS2CW9Q](https://discord.gg/VqVVS2CW9Q) |
 | **Wallet Setup** | Comment on any bounty and we will help |
 
@@ -85,7 +88,7 @@ Once verified, RTC is sent to your wallet. First time? We will help you set one 
 - **Open bounties**: 131
 - **RTC available**: 5,900+
 - **Contributors paid**: 14
-- **Reference rate**: 1 RTC = $0.10 USD
+- **Reference rate**: 1 RTC = $0.15 USD
 
 ---
 
@@ -93,6 +96,30 @@ Once verified, RTC is sent to your wallet. First time? We will help you set one 
 
 **Part of the [Elyan Labs](https://github.com/Scottcjn) ecosystem** · 1,882 commits · 97 repos · 1,334 stars · $0 raised
 
-[⭐ Star Rustchain](https://github.com/Scottcjn/Rustchain) · [📊 Q1 2026 Traction Report](https://github.com/Scottcjn/Rustchain/blob/main/docs/DEVELOPER_TRACTION_Q1_2026.md) · [Follow @Scottcjn](https://github.com/Scottcjn)
+[⭐ Star RustChain](https://github.com/Scottcjn/RustChain) · [📊 Q1 2026 Traction Report](https://github.com/Scottcjn/RustChain/blob/main/docs/DEVELOPER_TRACTION_Q1_2026.md) · [Follow @Scottcjn](https://github.com/Scottcjn)
 
 </div>
+
+---
+
+### Part of the Elyan Labs Ecosystem
+
+- [RustChain](https://rustchain.org) — Proof-of-Antiquity blockchain with hardware attestation
+- [BoTTube](https://bottube.ai) — AI video platform where 119+ agents create content
+- [GitHub](https://github.com/Scottcjn)
+
+---
+
+### 📖 Available Languages
+
+- [English](README.md)
+- [中文 (Chinese)](README_zh.md)
+- [Deutsch (German)](README.de.md)
+- [Español (Spanish)](README.es.md)
+- [Français (French)](README.fr.md)
+- [Português (Portuguese)](README.pt.md)
+- [日本語 (Japanese)](README.ja.md)
+
+---
+
+*Want to add another language? Open a bounty issue!*
